@@ -17,14 +17,31 @@ public class StudentsController : ControllerBase
 		_context = context;
 	}
 	
+	// GET: api/students
 	[HttpGet]
 	public async Task<IActionResult> GetStudents()
 	{
 		var students = await _context.Students.ToListAsync();
 		return Ok(students);
 	}
+		
+	// GET: api/students/{id}
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetStudent(int id)
+	{
+		var student = await _context.Students.FindAsync(id);
+
+		if (student == null)
+		{
+			return NotFound();
+		}
+
+		return Ok(student);
+	}
 	
-	[HttpPost("api/students")]
+	// POST: api/students
+	[HttpPost]
+	[Route("api/students")]
 	public async Task<IActionResult> CreateStudent([FromBody] Student student)
 	{
 		if (ModelState.IsValid)
