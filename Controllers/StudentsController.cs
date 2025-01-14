@@ -74,6 +74,7 @@ public class StudentsController : ControllerBase
 		return BadRequest(ModelState);	
 	}
 	
+	// PUT: api/students{id}
 	[HttpPut("{id}")]
 	public async Task<IActionResult> UpdateStudent(int id, [FromBody] Student updatedStudent)
 	{
@@ -101,6 +102,32 @@ public class StudentsController : ControllerBase
 		{
 			_logger.LogError($"Failed to update student: {ex.Message}");
 			return StatusCode(500, "Internal server error.");
+		}
+	}
+	
+	// DELETE: api/students{id}
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteStudent(int id)
+	{
+		var student = await _context.Students.FindAsync(id);
+
+		if (student == null)
+		{
+			_logger.LogWarning("Attempted to delete student with ID {StudentId}, but it was not found.", id);
+			return NotFound($"Student with ID {id} not found.");
+		}
+
+		try
+		{
+			_context.Students.Remove(student);
+			await _context.SaveChangesAsync();
+			_logger.LogInformation("Successfully deleted student with ID {StudentId}.", id);
+			return NoContent();
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error occurred while deleting student with ID {StudentId}.", id);
+			return StatusCode(500, "Internal server error while deleting student.");
 		}
 	}
 }
