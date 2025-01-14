@@ -3,7 +3,6 @@ namespace StudentApi.Controllers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using StudentApi.Data;
 using StudentApi.Models;
 
@@ -46,13 +45,21 @@ public class StudentsController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> CreateStudent([FromBody] Student student)
 	{
-		_logger.LogInformation("Received a POST request to create a student.");
 
 		if (ModelState.IsValid)
 		{
 			_context.Students.Add(student);
 			await _context.SaveChangesAsync();
-			_logger.LogInformation($"Student with ID {student.Id} created successfully.");
+			var result = await _context.SaveChangesAsync();
+			if (result > 0)
+			{
+				_logger.LogInformation("Successfully saved student.");
+			}
+			else
+			{
+				_logger.LogWarning("SaveChangesAsync did not affect any rows.");
+			}
+
 			return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
 		}
 
