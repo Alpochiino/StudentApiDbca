@@ -55,13 +55,13 @@ public class StudentsController : ControllerBase
 				if (result > 0)
 				{
 					_logger.LogInformation("Successfully saved student: {StudentName}", student.Name);
+					return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
 				}
 				else
 				{
 					_logger.LogWarning("SaveChangesAsync did not affect any rows.");
 				}
 
-				return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
 			}
 			catch (Exception ex)
 			{
@@ -71,6 +71,6 @@ public class StudentsController : ControllerBase
 		}
 
 		_logger.LogError("Model state is invalid. Could not create student.");
-		return BadRequest(ModelState);
+		return BadRequest(ModelState);	
 	}
 }

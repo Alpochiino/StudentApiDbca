@@ -11,7 +11,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<StudentDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+	.EnableSensitiveDataLogging()
+	.LogTo(Console.WriteLine, LogLevel.Information));
 	
 builder.Services.AddCors(options =>
 {
