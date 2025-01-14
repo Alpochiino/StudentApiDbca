@@ -73,4 +73,34 @@ public class StudentsController : ControllerBase
 		_logger.LogError("Model state is invalid. Could not create student.");
 		return BadRequest(ModelState);	
 	}
+	
+	[HttpPut("{id}")]
+	public async Task<IActionResult> UpdateStudent(int id, [FromBody] Student updatedStudent)
+	{
+		if (id != updatedStudent.Id)
+		{
+			return BadRequest("Student ID mismatch.");
+		}
+
+		var existingStudent = await _context.Students.FindAsync(id);
+		if (existingStudent == null)
+		{
+			return NotFound($"Student with ID {id} not found.");
+		}
+
+		existingStudent.Name = updatedStudent.Name;
+		existingStudent.Age = updatedStudent.Age;
+		existingStudent.Major = updatedStudent.Major;
+
+		try
+		{
+			await _context.SaveChangesAsync();
+			return NoContent();
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError($"Failed to update student: {ex.Message}");
+			return StatusCode(500, "Internal server error.");
+		}
+	}
 }
