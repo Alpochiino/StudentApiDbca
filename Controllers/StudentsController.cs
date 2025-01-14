@@ -3,6 +3,7 @@ namespace StudentApi.Controllers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using StudentApi.Data;
 using StudentApi.Models;
 
@@ -11,10 +12,12 @@ using StudentApi.Models;
 public class StudentsController : ControllerBase
 {
 	private readonly StudentDbContext _context;
+	private readonly ILogger<StudentsController> _logger;
 
-	public StudentsController(StudentDbContext context)
+	public StudentsController(StudentDbContext context, ILogger<StudentsController> logger)
 	{
 		_context = context;
+		_logger = logger;
 	}
 	
 	// GET: api/students
@@ -41,16 +44,19 @@ public class StudentsController : ControllerBase
 	
 	// POST: api/students
 	[HttpPost]
-	[Route("api/students")]
 	public async Task<IActionResult> CreateStudent([FromBody] Student student)
 	{
+		_logger.LogInformation("Received a POST request to create a student.");
+
 		if (ModelState.IsValid)
 		{
 			_context.Students.Add(student);
 			await _context.SaveChangesAsync();
+			_logger.LogInformation($"Student with ID {student.Id} created successfully.");
 			return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
 		}
 
+		_logger.LogError("Model state is invalid. Could not create student.");
 		return BadRequest(ModelState);
 	}
 }
