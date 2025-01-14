@@ -45,22 +45,29 @@ public class StudentsController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> CreateStudent([FromBody] Student student)
 	{
-
 		if (ModelState.IsValid)
 		{
-			_context.Students.Add(student);
-			await _context.SaveChangesAsync();
-			var result = await _context.SaveChangesAsync();
-			if (result > 0)
+			try
 			{
-				_logger.LogInformation("Successfully saved student.");
-			}
-			else
-			{
-				_logger.LogWarning("SaveChangesAsync did not affect any rows.");
-			}
+				_context.Students.Add(student);
+				var result = await _context.SaveChangesAsync();
 
-			return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
+				if (result > 0)
+				{
+					_logger.LogInformation("Successfully saved student: {StudentName}", student.Name);
+				}
+				else
+				{
+					_logger.LogWarning("SaveChangesAsync did not affect any rows.");
+				}
+
+				return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while saving student.");
+				return StatusCode(500, "Internal server error while creating student.");
+			}
 		}
 
 		_logger.LogError("Model state is invalid. Could not create student.");
