@@ -25,3 +25,4 @@ jobs:
           --resource-group forstudents \
           --target-port 80 \
           --cpu 0.5 --memory 1.0Gi \
+          --ingress 'external'
