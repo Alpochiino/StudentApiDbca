@@ -30,7 +30,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t studentapiregistry.azurecr.io/studentapi:latest
+          docker build -t studentapiregistry.azurecr.io/studentapi:latest ./StudentApi
           docker push studentapiregistry.azurecr.io/studentapi:latest
 
       - name: Deploy to Azure Container App
