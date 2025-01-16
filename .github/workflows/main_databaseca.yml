@@ -17,7 +17,7 @@ jobs:
       - name: Build and deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          appSourcePath: ${{ github.workspace }}/studentapi
+          appSourcePath: ${{ github.workspace }}./studentapi
           acrName: studentapiregistry
           containerAppName: studentapicontainerapp
           resourceGroup: forstudents
