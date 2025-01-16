@@ -19,7 +19,7 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}/src
           acrName: myregistry
-          containerAppName: my-container-app
-          resourceGroup: my-rg
+          containerAppName: studentapicontainerapp
+          resourceGroup: forstudents
 
 
