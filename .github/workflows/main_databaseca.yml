@@ -1,29 +1,27 @@
-name: Build and Push Web API Container
+name: Deploy Web API to Azure Container App
 
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on push to main branch
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Login to Azure Container Registry
-      uses: azure/docker-login@v1
+    - name: Login to Azure
+      uses: azure/login@v1
       with:
-        login-server: studentapiregistry.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Build Docker image
+    - name: Set up Azure Container App
       run: |
-        docker build . -t studentapiregistry.azurecr.io/studentapi:${{ github.sha }}
-
-    - name: Push Docker image to ACR
-      run: |
-        docker push studentapiregistry.azurecr.io/studentapi:${{ github.sha }}
+        az containerapp create \
+          --name studentapicontainerapp \
+          --resource-group forstudents \
+          --target-port 80 \
+          --cpu 0.5 --memory 1.0Gi \
