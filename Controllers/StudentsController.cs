@@ -11,12 +11,10 @@ using StudentApi.Models;
 public class StudentsController : ControllerBase
 {
 	private readonly StudentDbContext _context;
-	private readonly ILogger<StudentsController> _logger;
 
-	public StudentsController(StudentDbContext context, ILogger<StudentsController> logger)
+	public StudentsController(StudentDbContext context)
 	{
 		_context = context;
-		_logger = logger;
 	}
 	
 	// GET: api/students
@@ -54,23 +52,16 @@ public class StudentsController : ControllerBase
 
 				if (result > 0)
 				{
-					_logger.LogInformation("Successfully saved student: {StudentName}", student.Name);
 					return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
-				}
-				else
-				{
-					_logger.LogWarning("SaveChangesAsync did not affect any rows.");
 				}
 
 			}
-			catch (Exception ex)
+			catch
 			{
-				_logger.LogError(ex, "Error occurred while saving student.");
 				return StatusCode(500, "Internal server error while creating student.");
 			}
 		}
 
-		_logger.LogError("Model state is invalid. Could not create student.");
 		return BadRequest(ModelState);	
 	}
 	
@@ -98,9 +89,8 @@ public class StudentsController : ControllerBase
 			await _context.SaveChangesAsync();
 			return NoContent();
 		}
-		catch (Exception ex)
+		catch
 		{
-			_logger.LogError($"Failed to update student: {ex.Message}");
 			return StatusCode(500, "Internal server error.");
 		}
 	}
@@ -113,7 +103,6 @@ public class StudentsController : ControllerBase
 
 		if (student == null)
 		{
-			_logger.LogWarning("Attempted to delete student with ID {StudentId}, but it was not found.", id);
 			return NotFound($"Student with ID {id} not found.");
 		}
 
@@ -121,12 +110,10 @@ public class StudentsController : ControllerBase
 		{
 			_context.Students.Remove(student);
 			await _context.SaveChangesAsync();
-			_logger.LogInformation("Successfully deleted student with ID {StudentId}.", id);
 			return NoContent();
 		}
-		catch (Exception ex)
+		catch
 		{
-			_logger.LogError(ex, "Error occurred while deleting student with ID {StudentId}.", id);
 			return StatusCode(500, "Internal server error while deleting student.");
 		}
 	}
